@@ -1,0 +1,1 @@
+A Python program that draws a cute red panda cub sitting in a pastel teacup and writes it as a 1024x1024 PNG.
