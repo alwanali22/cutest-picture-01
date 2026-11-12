@@ -1,48 +1,49 @@
 """
-This module reads 'art.jpg' from the same directory, verifies it is a JPEG,
-and writes it to the output directory defined by MAKEFUN_OUTPUT_DIR.
+This program copies the bundled 'art.jpg' picture file to the output location
+expected by the competition. It checks that the picture is a valid JPEG
+before writing and verifies the written file byte-for-byte afterwards to
+ensure integrity.
 """
+
 import os
 import sys
 import hashlib
 
-# Paths
-source_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "art.jpg")
-output_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
-output_path = os.path.join(output_dir, "entry.png")
+# Path of the script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+source_path = os.path.join(script_dir, 'art.jpg')
 
-# 1. Read source
-try:
-    with open(source_path, "rb") as f:
-        data = f.read()
-except FileNotFoundError:
-    print(f"Error: {source_path} not found.")
+# Read source
+with open(source_path, 'rb') as f:
+    source_bytes = f.read()
+
+# JPEG magic check
+if source_bytes[:2] != b'\xff\xd8':
+    # Need to print a clear error and fail
+    print("Error: Not a JPEG file", file=sys.stderr)
     sys.exit(1)
 
-# 2. Check JPEG magic bytes
-if len(data) < 2 or data[:2] != b'\xff\xd8':
-    print("Error: Not a JPEG file.")
-    sys.exit(1)
-
-# 3. Create output dir
+# Determine output path
+output_dir = os.environ.get('MAKEFUN_OUTPUT_DIR', '/output')
 os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, 'entry.png')
 
-# 4. Write to output
-with open(output_path, "wb") as f:
-    f.write(data)
+# Write
+with open(output_path, 'wb') as f:
+    f.write(source_bytes)
 
-# 5. Re-read and check hash
-with open(output_path, "rb") as f:
-    written_data = f.read()
+# Re-read and hash
+with open(output_path, 'rb') as f:
+    written_bytes = f.read()
 
-source_hash = hashlib.sha256(data).hexdigest()
-written_hash = hashlib.sha256(written_data).hexdigest()
+# Hash verify
+source_hash = hashlib.sha256(source_bytes).hexdigest()
+written_hash = hashlib.sha256(written_bytes).hexdigest()
 
 if source_hash != written_hash:
-    print("Error: Hash mismatch.")
+    print("Error: Hash mismatch", file=sys.stderr)
     sys.exit(1)
 
-# 6. Print info
-print(f"Path: {output_path}")
-print(f"Size: {len(written_data)} bytes")
+print(f"Output path: {output_path}")
+print(f"Bytes written: {len(written_bytes)}")
 print(f"SHA-256: {written_hash}")
