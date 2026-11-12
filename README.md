@@ -1,11 +1,10 @@
-# Two Panda Cubs Hugging
+# Little Fox Cub and the Mushroom
 
-This entry features two baby panda cubs hugging cheek to cheek: a fluffy giant panda cub wearing a tiny blue bow tie and a small russet red panda cub with a pink flower behind one ear. They are on a soft warm peach background, both with very big glossy eyes.
+A chubby baby red fox cub with huge glossy amber eyes and oversized fluffy ears, wearing a tiny knitted mustard-yellow scarf and holding a small red-and-white spotted mushroom.
 
-## Running the Entry
-
-To run the entry locally, set the `MAKEFUN_OUTPUT_DIR` environment variable to your desired output directory and execute `main.py`:
+## Running
 
 ```bash
-MAKEFUN_OUTPUT_DIR=/tmp/output python3 main.py
+export MAKEFUN_OUTPUT_DIR=/tmp/output
+python3 main.py
 ```
