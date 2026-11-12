@@ -1,8 +1,12 @@
-# Little Capybara Hugging a Chick
+# Little Fawn and Bunny Asleep in a Basket
 
-This entry features a chubby baby capybara with a tiny white daisy flower crown, gently hugging a small fluffy yellow baby chick cheek to cheek with its front paws. Both animals have closed, happy eyes, set against a soft pastel peach-pink background with floating white daisy petals and warm golden light.
+This project contains the entry artwork for the "cutest-picture-01" bounty.
 
-To run this entry locally:
+## Running the Project
+
+To export the artwork, run:
+
 ```bash
-export MAKEFUN_OUTPUT_DIR=/tmp/output && python3 main.py
+export MAKEFUN_OUTPUT_DIR=/path/to/output
+python3 main.py
 ```

@@ -1,49 +1,56 @@
 """
-This program copies the bundled 'art.jpg' picture file to the output location
-expected by the competition. It checks that the picture is a valid JPEG
-before writing and verifies the written file byte-for-byte afterwards to
-ensure integrity.
+This module reads an art.jpg file, validates its format, and copies it to a
+specified output directory while ensuring the integrity of the file by
+verifying both its size and SHA-256 hash.
 """
-
 import os
 import sys
 import hashlib
+import shutil
 
-# Path of the script
-script_dir = os.path.dirname(os.path.abspath(__file__))
-source_path = os.path.join(script_dir, 'art.jpg')
+def get_sha256(path):
+    sha256_hash = hashlib.sha256()
+    with open(path, "rb") as f:
+        for byte_block in iter(lambda: f.read(4096), b""):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
 
-# Read source
-with open(source_path, 'rb') as f:
-    source_bytes = f.read()
+def main():
+    art_path = os.path.join(os.path.dirname(__file__), 'art.jpg')
+    out_dir = os.environ.get('MAKEFUN_OUTPUT_DIR', '/output')
+    target_path = os.path.join(out_dir, 'entry.png')
 
-# JPEG magic check
-if source_bytes[:2] != b'\xff\xd8':
-    # Need to print a clear error and fail
-    print("Error: Not a JPEG file", file=sys.stderr)
-    sys.exit(1)
+    # Validate art.jpg
+    if not os.path.exists(art_path):
+        print(f"Error: {art_path} not found.")
+        sys.exit(1)
 
-# Determine output path
-output_dir = os.environ.get('MAKEFUN_OUTPUT_DIR', '/output')
-os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, 'entry.png')
+    with open(art_path, 'rb') as f:
+        magic = f.read(3)
+        if magic != b'\xff\xd8\xff':
+            print("Error: art.jpg is not a valid JPEG.")
+            sys.exit(1)
 
-# Write
-with open(output_path, 'wb') as f:
-    f.write(source_bytes)
+    # Copy to target
+    os.makedirs(out_dir, exist_ok=True)
+    shutil.copyfile(art_path, target_path)
 
-# Re-read and hash
-with open(output_path, 'rb') as f:
-    written_bytes = f.read()
+    # Verify
+    art_size = os.path.getsize(art_path)
+    target_size = os.path.getsize(target_path)
 
-# Hash verify
-source_hash = hashlib.sha256(source_bytes).hexdigest()
-written_hash = hashlib.sha256(written_bytes).hexdigest()
+    if art_size != target_size:
+        print(f"Error: Size mismatch (art: {art_size}, target: {target_size})")
+        sys.exit(1)
 
-if source_hash != written_hash:
-    print("Error: Hash mismatch", file=sys.stderr)
-    sys.exit(1)
+    art_hash = get_sha256(art_path)
+    target_hash = get_sha256(target_path)
 
-print(f"Output path: {output_path}")
-print(f"Bytes written: {len(written_bytes)}")
-print(f"SHA-256: {written_hash}")
+    if art_hash != target_hash:
+        print(f"Error: Hash mismatch (art: {art_hash}, target: {target_hash})")
+        sys.exit(1)
+
+    print(f"Success! Output: {target_path}, Size: {target_size} bytes, SHA-256: {target_hash}")
+
+if __name__ == '__main__':
+    main()
