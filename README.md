@@ -1,12 +1,8 @@
-# Little Fawn and Bunny Asleep in a Basket
+# Cream Kitten with Mint Scarf in Soft Snow
 
-This project contains the entry artwork for the "cutest-picture-01" bounty.
+An entry for the make.fun "cutest-picture-01" bounty featuring a 3D rendered cream kitten.
 
-## Running the Project
-
-To export the artwork, run:
-
+## Run
 ```bash
-export MAKEFUN_OUTPUT_DIR=/path/to/output
 python3 main.py
 ```
